@@ -1,0 +1,51 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">SSE</h1>
+
+    <div class="flex-center position-ref full-height">
+        <h1>Simple SSE</h1>
+        <fieldset>
+            <legend>Your message(s)</legend>
+            <div id="messages">
+            </div>
+            <div>
+                <input id="txtMessage"><button id="btnMessage" onclick="sendMsg()">Send</button>
+            </div>
+        </fieldset>
+    </div>
+</div>
+@section Scripts{
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script>
+        @{
+            var request = Url.ActionContext.HttpContext.Request;
+            var domain = $"{request.Scheme}://" + request.Host.ToString().Trim('/');
+            }
+        var token = '@(Guid.NewGuid())';
+     var channelName = 'test'; //you channel to listener
+        const swUrl = '@(domain)/js/webpushnotification/notificationwebworker.js?c=' + channelName
+            + '&token=' + encodeURIComponent(token);
+
+            var myWorker = new SharedWorker (swUrl);
+            myWorker.port.onmessage=function(e){
+                WebSystemNotification.showToastr(e.data);
+            };
+
+    myWorker.port.start();
+
+     function sendMsg() {
+            //call to server side to post msg to other
+            var url = 'api/SSE/SendMessage';
+            jQuery.post(url, {
+                c: channelName,
+                token:token,
+                msg: jQuery('#txtMessage').val()
+            }, function(response) {
+                // no need call other ajax call to reload new data into #messages
+            }, "json");
+        }
+    </script>
+}
