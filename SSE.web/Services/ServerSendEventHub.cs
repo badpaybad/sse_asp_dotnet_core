@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace SSE.web.Services
 {
-    public class ServerSendEventHub
+    public static class ServerSendEventHub
     {
-        ConcurrentDictionary<string, List<HttpContext>> _hubs = new ConcurrentDictionary<string, List<HttpContext>>();
+        static ConcurrentDictionary<string, List<HttpContext>> _hubs = new ConcurrentDictionary<string, List<HttpContext>>();
 
-        public Dictionary<string, long> ListChannel()
+        public static Dictionary<string, long> ListChannel()
         {
             Dictionary<string, long> channels = new Dictionary<string, long>();
             lock (_hubs)
@@ -27,7 +27,7 @@ namespace SSE.web.Services
             return channels;
         }
 
-        public async Task RegisterListenerClientContext(string channel, HttpContext context)
+        public static async Task RegisterListenerClientContext(string channel, HttpContext context)
         {
             var response = context.Response;
 
@@ -56,7 +56,7 @@ namespace SSE.web.Services
             }
         }
 
-        async Task Publish(string channel, string message)
+        static async Task Publish(string channel, string message)
         {
             if (!_hubs.TryGetValue(channel, out var members))
             { return; }
@@ -83,7 +83,7 @@ namespace SSE.web.Services
             }
         }
 
-        public async Task Publish<T>(string channel, T data)
+        public static async Task Publish<T>(string channel, T data)
         {
             var message = System.Text.Json.JsonSerializer.Serialize(data);
 

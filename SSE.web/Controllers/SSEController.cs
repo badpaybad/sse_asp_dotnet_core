@@ -12,8 +12,7 @@ namespace SSE.web.Controllers
     [Route("api/[controller]")]
     public class SSEController : ControllerBase
     {
-        static ServerSendEventHub _hubs = new ServerSendEventHub();
-
+       
         public string GetRootWeb(Microsoft.AspNetCore.Http.HttpRequest request)
         {
             return $"{request.Scheme}://" + request.Host.ToString().Trim('/');
@@ -22,7 +21,7 @@ namespace SSE.web.Controllers
         [HttpGet("Listener")]
         public async Task Listener(string c, string token)
         {
-            await _hubs.RegisterListenerClientContext(c, HttpContext);
+            await ServerSendEventHub.RegisterListenerClientContext(c, HttpContext);
         }
 
         [HttpPost("SendMessage")]
@@ -33,7 +32,7 @@ namespace SSE.web.Controllers
             var msg = postData.msg;
 
             var uiChannel = $"{c}";
-            await _hubs.Publish(uiChannel, msg);
+            await ServerSendEventHub.Publish(uiChannel, msg);
         }
     }
 }
