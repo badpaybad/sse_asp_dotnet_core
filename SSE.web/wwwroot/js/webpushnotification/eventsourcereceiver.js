@@ -23,8 +23,7 @@ PushServer = {
     },
     
     listenChannel: function (channel, onMessageReceived, onConnected, onOpen) {
-        PushServer.__currentEs = new EventSource('api/SSE/Listener?c=' + encodeURIComponent(channel)
-            + '&c=' + encodeURIComponent(subscriberName)
+        PushServer.__currentEs = new EventSource('/api/SSE/Listener?c=' + encodeURIComponent(channel)
             + '&token=' + encodeURIComponent(PushServer.__token));
         PushServer.__currentEs.onopen = function (evt) {
             if (onOpen) onOpen(evt);

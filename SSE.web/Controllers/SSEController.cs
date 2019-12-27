@@ -26,9 +26,7 @@ namespace SSE.web.Controllers
         }
 
         [HttpPost("SendMessage")]
-        public async Task SendMessage([FromBody] ServerSendEventMessage postData
-            //, string c, string token, string msg
-            )
+        public async Task SendMessage([FromBody] ServerSendEventMessage postData)
         {
             var c = postData.c;
             var token = postData.token;

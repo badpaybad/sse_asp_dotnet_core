@@ -18,34 +18,58 @@
     </div>
 </div>
 @section Scripts{
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script>
         @{
             var request = Url.ActionContext.HttpContext.Request;
             var domain = $"{request.Scheme}://" + request.Host.ToString().Trim('/');
-            }
+        }
+
         var token = '@(Guid.NewGuid())';
-     var channelName = 'test'; //you channel to listener
-        const swUrl = '@(domain)/js/webpushnotification/notificationwebworker.js?c=' + channelName
+        var channelName = 'test'; //you channel to listener
+        const swUrl = '/js/webpushnotification/notificationwebsharedworker.js?c=' + channelName
             + '&token=' + encodeURIComponent(token);
 
-            var myWorker = new SharedWorker (swUrl);
-            myWorker.port.onmessage=function(e){
-                WebSystemNotification.showToastr(e.data);
-            };
+        var myWorker = new SharedWorker (swUrl);
+        myWorker.port.onmessage = function (e) {
+            console.log(e);
+            //todo: do with your logic
+            var msgs = jQuery("#messages").html();
+            msgs = msgs + '<div>' + JSON.stringify(e.data) + '</div>';
+            jQuery("#messages").html(msgs);
+        }
 
-    myWorker.port.start();
+        myWorker.port.start();
 
-     function sendMsg() {
-            //call to server side to post msg to other
+        //var myWorker = new Worker(swUrl);
+        //myWorker.onmessage = function (e) {
+        //    alert(JSON.stringify(e.data));
+        //}
+
+         jQuery.ajaxSetup({
+            headers: {
+                'content-type': 'application/json'
+            }
+         });
+
+        function sendMsg() {
             var url = 'api/SSE/SendMessage';
-            jQuery.post(url, {
-                c: channelName,
-                token:token,
-                msg: jQuery('#txtMessage').val()
-            }, function(response) {
-                // no need call other ajax call to reload new data into #messages
-            }, "json");
+
+            jQuery.ajax
+                ({
+                    type: "POST",
+                    url: url,
+                    contentType:"application/json",
+                    dataType:"json",
+                    async: false,
+                    data: JSON.stringify({
+                        c: channelName,
+                        token: token,
+                        msg: jQuery('#txtMessage').val()
+                    }),
+                    success: function () {
+
+                    }
+                });
         }
     </script>
 }

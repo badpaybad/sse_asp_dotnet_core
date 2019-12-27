@@ -2,9 +2,9 @@
 {
     public class ServerSendEventMessage
     {
-        public string c;
-        public string token;
-        public string msg;
+        public string c { get; set; }
+        public string token { get; set; }
+        public string msg { get; set; }
     }
 
 
